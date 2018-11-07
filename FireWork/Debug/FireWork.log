@@ -1,23 +1,46 @@
 ﻿  main.cpp
-e:\opengl\firework\firework\shader.h(60): warning C4101: “infoLog”: 未引用的局部变量
-e:\opengl\firework\firework\shader.h(59): warning C4101: “success”: 未引用的局部变量
-e:\opengl\firework\firework\particle.h(19): warning C4005: “TRANSPARENT”: 宏重定义
+c:\users\administrator\desktop\firework\firework\shader.h(60): warning C4101: “infoLog”: 未引用的局部变量
+c:\users\administrator\desktop\firework\firework\shader.h(59): warning C4101: “success”: 未引用的局部变量
+c:\users\administrator\desktop\firework\firework\particle.h(19): warning C4005: “TRANSPARENT”: 宏重定义
   c:\program files (x86)\windows kits\10\include\10.0.16299.0\um\wingdi.h(1871): note: 参见“TRANSPARENT”的前一个定义
-e:\opengl\firework\firework\operate.h(45): warning C4018: “<”: 有符号/无符号不匹配
-e:\opengl\firework\firework\operate.h(93): warning C4018: “<”: 有符号/无符号不匹配
-e:\opengl\firework\firework\operate.h(111): warning C4018: “<”: 有符号/无符号不匹配
-e:\opengl\firework\firework\operate.h(141): warning C4244: “初始化”: 从“const float”转换到“int”，可能丢失数据
-e:\opengl\firework\firework\operate.h(160): warning C4244: “参数”: 从“time_t”转换到“unsigned int”，可能丢失数据
-e:\opengl\firework\firework\main.cpp(82): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
-e:\opengl\firework\firework\main.cpp(99): warning C4018: “<”: 有符号/无符号不匹配
-e:\opengl\firework\firework\main.cpp(146): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
-e:\opengl\firework\firework\main.cpp(147): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
-e:\opengl\firework\firework\main.cpp(150): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
-e:\opengl\firework\firework\main.cpp(151): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
-e:\opengl\firework\firework\main.cpp(152): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
-e:\opengl\firework\firework\main.cpp(153): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
-e:\opengl\firework\firework\main.cpp(159): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据
-  正在生成代码...
-  正在跳过...(未检测到相关更改)
-  Operate.cpp
-  FireWork.vcxproj -> E:\OpenGL\FireWork\Debug\FireWork.exe
+c:\users\administrator\desktop\firework\firework\particle.h(44): warning C4305: “初始化”: 从“double”到“float”截断
+c:\users\administrator\desktop\firework\firework\particle.h(45): warning C4305: “初始化”: 从“double”到“float”截断
+c:\users\administrator\desktop\firework\firework\particle.h(46): warning C4305: “初始化”: 从“double”到“float”截断
+c:\users\administrator\desktop\firework\firework\operate.h(46): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+c:\users\administrator\desktop\firework\firework\operate.h(47): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+c:\users\administrator\desktop\firework\firework\operate.h(48): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+c:\users\administrator\desktop\firework\firework\operate.h(49): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+c:\users\administrator\desktop\firework\firework\operate.h(62): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
+c:\users\administrator\desktop\firework\firework\operate.h(69): warning C4244: “参数”: 从“time_t”转换到“unsigned int”，可能丢失数据
+c:\users\administrator\desktop\firework\firework\operate.h(71): warning C4018: “<”: 有符号/无符号不匹配
+c:\users\administrator\desktop\firework\firework\operate.h(79): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
+c:\users\administrator\desktop\firework\firework\operate.h(138): warning C4018: “<”: 有符号/无符号不匹配
+c:\users\administrator\desktop\firework\firework\operate.h(165): warning C4244: “参数”: 从“time_t”转换到“unsigned int”，可能丢失数据
+c:\users\administrator\desktop\firework\firework\operate.h(171): warning C4244: “初始化”: 从“const float”转换到“int”，可能丢失数据
+c:\users\administrator\desktop\firework\firework\operate.h(193): warning C4244: “参数”: 从“time_t”转换到“unsigned int”，可能丢失数据
+c:\users\administrator\desktop\firework\firework\operate.h(237): warning C4244: “return”: 从“double”转换到“float”，可能丢失数据
+c:\users\administrator\desktop\firework\firework\main.cpp(85): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+c:\users\administrator\desktop\firework\firework\main.cpp(103): warning C4018: “<”: 有符号/无符号不匹配
+c:\users\administrator\desktop\firework\firework\main.cpp(123): warning C4018: “<”: 有符号/无符号不匹配
+c:\users\administrator\desktop\firework\firework\main.cpp(166): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+c:\users\administrator\desktop\firework\firework\main.cpp(167): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+c:\users\administrator\desktop\firework\firework\main.cpp(170): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+c:\users\administrator\desktop\firework\firework\main.cpp(171): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+c:\users\administrator\desktop\firework\firework\main.cpp(172): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+c:\users\administrator\desktop\firework\firework\main.cpp(173): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+c:\users\administrator\desktop\firework\firework\main.cpp(179): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据
+glfw3.lib(context.obj) : warning LNK4099: 未找到 PDB“glfw.pdb”(使用“glfw3.lib(context.obj)”或在“C:\Users\Administrator\Desktop\FireWork\Debug\glfw.pdb”中寻找)；正在链接对象，如同没有调试信息一样
+glfw3.lib(init.obj) : warning LNK4099: 未找到 PDB“glfw.pdb”(使用“glfw3.lib(init.obj)”或在“C:\Users\Administrator\Desktop\FireWork\Debug\glfw.pdb”中寻找)；正在链接对象，如同没有调试信息一样
+glfw3.lib(input.obj) : warning LNK4099: 未找到 PDB“glfw.pdb”(使用“glfw3.lib(input.obj)”或在“C:\Users\Administrator\Desktop\FireWork\Debug\glfw.pdb”中寻找)；正在链接对象，如同没有调试信息一样
+glfw3.lib(monitor.obj) : warning LNK4099: 未找到 PDB“glfw.pdb”(使用“glfw3.lib(monitor.obj)”或在“C:\Users\Administrator\Desktop\FireWork\Debug\glfw.pdb”中寻找)；正在链接对象，如同没有调试信息一样
+glfw3.lib(vulkan.obj) : warning LNK4099: 未找到 PDB“glfw.pdb”(使用“glfw3.lib(vulkan.obj)”或在“C:\Users\Administrator\Desktop\FireWork\Debug\glfw.pdb”中寻找)；正在链接对象，如同没有调试信息一样
+glfw3.lib(window.obj) : warning LNK4099: 未找到 PDB“glfw.pdb”(使用“glfw3.lib(window.obj)”或在“C:\Users\Administrator\Desktop\FireWork\Debug\glfw.pdb”中寻找)；正在链接对象，如同没有调试信息一样
+glfw3.lib(win32_init.obj) : warning LNK4099: 未找到 PDB“glfw.pdb”(使用“glfw3.lib(win32_init.obj)”或在“C:\Users\Administrator\Desktop\FireWork\Debug\glfw.pdb”中寻找)；正在链接对象，如同没有调试信息一样
+glfw3.lib(win32_joystick.obj) : warning LNK4099: 未找到 PDB“glfw.pdb”(使用“glfw3.lib(win32_joystick.obj)”或在“C:\Users\Administrator\Desktop\FireWork\Debug\glfw.pdb”中寻找)；正在链接对象，如同没有调试信息一样
+glfw3.lib(win32_monitor.obj) : warning LNK4099: 未找到 PDB“glfw.pdb”(使用“glfw3.lib(win32_monitor.obj)”或在“C:\Users\Administrator\Desktop\FireWork\Debug\glfw.pdb”中寻找)；正在链接对象，如同没有调试信息一样
+glfw3.lib(win32_time.obj) : warning LNK4099: 未找到 PDB“glfw.pdb”(使用“glfw3.lib(win32_time.obj)”或在“C:\Users\Administrator\Desktop\FireWork\Debug\glfw.pdb”中寻找)；正在链接对象，如同没有调试信息一样
+glfw3.lib(win32_tls.obj) : warning LNK4099: 未找到 PDB“glfw.pdb”(使用“glfw3.lib(win32_tls.obj)”或在“C:\Users\Administrator\Desktop\FireWork\Debug\glfw.pdb”中寻找)；正在链接对象，如同没有调试信息一样
+glfw3.lib(win32_window.obj) : warning LNK4099: 未找到 PDB“glfw.pdb”(使用“glfw3.lib(win32_window.obj)”或在“C:\Users\Administrator\Desktop\FireWork\Debug\glfw.pdb”中寻找)；正在链接对象，如同没有调试信息一样
+glfw3.lib(wgl_context.obj) : warning LNK4099: 未找到 PDB“glfw.pdb”(使用“glfw3.lib(wgl_context.obj)”或在“C:\Users\Administrator\Desktop\FireWork\Debug\glfw.pdb”中寻找)；正在链接对象，如同没有调试信息一样
+glfw3.lib(egl_context.obj) : warning LNK4099: 未找到 PDB“glfw.pdb”(使用“glfw3.lib(egl_context.obj)”或在“C:\Users\Administrator\Desktop\FireWork\Debug\glfw.pdb”中寻找)；正在链接对象，如同没有调试信息一样
+  FireWork.vcxproj -> C:\Users\Administrator\Desktop\FireWork\Debug\FireWork.exe

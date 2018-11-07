@@ -6,7 +6,9 @@
 
 class Operate {
 public:
-	int particleNumber = 100;
+	int particleNumber = 100;//总粒子数
+	int totalTailNum;//计算尾部总的粒子数;
+	int maxLife = 0;
 	Parameter parameter;
 
 	//设置烟花系统参数
@@ -16,7 +18,7 @@ public:
 	//粒子的运动模型
 	void motion(Particle &particle);
 	//粒子的消亡，生命周期减少、尺寸减小、透明度减小，返回是否绘制
-	bool isDie(Particle &particle);
+	bool isDie(Particle &particle, bool isStop);
 	//获取粒子的尾部位置
 	void getTailPosition(Particle &particle);
 	//绘制尾部（头部也一块绘制）
@@ -31,16 +33,40 @@ private:
 	glm::vec3 getTailScale(float size, int k, int total);
 	//根据当前头粒子的transparent、总共尾部粒子数获取第k个粒子的transparent
 	float getTailTransparent(float transparent, int k, int total);
+	//获取[-1, 1]之间的随机数
+	float getUnitRand();
 }; 
-
 
 ///函数的实现
 //设置烟花系统参数
-void  Operate::setParameter() {}
+void  Operate::setParameter() {
+	// 重置系统参数后，可进行一些修改
+	// 获取亮度较大的颜色组合
+	while (true) {
+		float R = getUnitRand() / 2.0 + 0.5;
+		float G = getUnitRand() / 2.0 + 0.5;
+		float B = getUnitRand() / 2.0 + 0.5;
+		float Y = 0.299*R + 0.587*G + 0.114*B;//计算亮度
+		if (Y >= 0.5) {
+			parameter.color = glm::vec3(R, G, B);
+			break;//亮度满足条件结束
+		}
+	}
+}
 
 //初始化所有粒子
 void Operate::initParticles(vector<Particle>& particles, Model& ourModel, Shader& ourShader) {
+	particles.clear();
 	vector<glm::vec3> dirs = genAverDir(parameter.number);
+	particleNumber = dirs.size();//保存总共的粒子数
+	maxLife = parameter.initialLife + parameter.lifeBlur * parameter.initialLife;//获取粒子生命的最大值
+	totalTailNum = (parameter.saveTailNum - 1) * (parameter.interTailNum + 1);//计算总尾部粒子数
+	float m_speed = parameter.initialSpeed;
+	glm::vec3 m_accelerate = parameter.accelerate;
+	int m_life = parameter.initialLife;
+	float m_size = parameter.size;
+	float m_transparent = parameter.transparent;
+	srand(time(NULL));
 	//vector<glm::vec3> dirs = genRandDir(particleNumber);
 	for (int i = 0; i < dirs.size(); i++) {
 		//生成一个粒子
@@ -48,11 +74,12 @@ void Operate::initParticles(vector<Particle>& particles, Model& ourModel, Shader
 		particle.particleModel = ourModel; //粒子的模型
 		particle.particleShader = ourShader;//绘制粒子的shader
 		particle.dir = dirs[i]; //粒子的初始方向
-		particle.speed = dirs[i] * parameter.initialSpeed; //粒子的初始速度
-		if (parameter.isResist) particle.accelerate = parameter.accelerate;//如果存在阻力,设置粒子的加速度
-		particle.life = parameter.initialLife;//粒子的生命
-		particle.size = parameter.size;//粒子的尺寸
-		particle.transparent = parameter.transparent;//粒子的初始透明度
+		particle.speed = dirs[i] * (m_speed + m_speed * parameter.speedBlur * getUnitRand()); //粒子的初始速度,加入扰动
+		if (parameter.isResist) particle.accelerate = m_accelerate;//如果存在阻力,设置粒子的加速度
+		particle.life = m_life + m_life * parameter.lifeBlur * getUnitRand();//粒子的生命
+		particle.tailPosition =list<glm::vec3>(parameter.saveTailNum, particle.position); // 存储的尾部位置
+		particle.size = m_size + m_size * parameter.sizeBlur * getUnitRand();//粒子的尺寸
+		particle.transparent = m_transparent + m_transparent * parameter.transparentBlur * getUnitRand();//粒子的初始透明度
 		particles.push_back(particle);//保存生成的粒子
 	}
 }
@@ -64,15 +91,22 @@ void Operate::motion(Particle &particle) {
 	//TODO：加速度还没更新，可以与速度的平方成反比
 	particle.speed -= particle.accelerate * t;
 	particle.position += particle.speed * t;
+	//运动之后需要更新保存的尾部粒子位置
+	getTailPosition(particle);
 }
 
 //粒子的消亡，生命周期减少、尺寸减小、透明度减小，返回是否绘制
-bool Operate::isDie(Particle &particle) {
+bool Operate::isDie(Particle &particle, bool isStop) {
+	//暂停粒子的属性不改变直接返回进行绘制
+	if (isStop) return true;
 	// 生命周期
 	if (particle.life > 0) {
 		particle.life--;
 	}
-	else return false;
+	else {
+		particleNumber--;
+		return false;
+	}
 	// 尺寸
 	if (particle.size > 0) {
 		particle.size -= parameter.sizeAtten;
@@ -83,20 +117,14 @@ bool Operate::isDie(Particle &particle) {
 		particle.transparent -= parameter.transparentAtten;
 	}
 	else return false;
-
 	return true;
 }
 
 //获取粒子的尾部位置
 void Operate::getTailPosition(Particle &particle) {
-	glm::vec3 pos = particle.position; //当前粒子的位置,保存之前N个粒子的位置
-	if (particle.tailPosition.size() < parameter.saveTailNum) {
-		particle.tailPosition.push_front(pos);
-	}
-	else {
-		particle.tailPosition.pop_back();
-		particle.tailPosition.push_front(pos);
-	}
+	glm::vec3 pos = particle.position;
+	particle.tailPosition.pop_back();
+	particle.tailPosition.push_front(pos);
 }
 
 //绘制尾部（头部也一块绘制）
@@ -105,7 +133,6 @@ void Operate::renderTail(Particle &particle, glm::mat4 modelMat) {
 	for (list<glm::vec3>::iterator itPos = particle.tailPosition.begin(); itPos != particle.tailPosition.end(); ++itPos) {
 		tailPos.push_back(*itPos);
 	}
-	int totalNum = (parameter.saveTailNum - 1) * (parameter.interTailNum + 1);//计算总的粒子数
 	int interNum = parameter.interTailNum;//在中间插N个位置出来
 	int m = 0;
 	for (int i = 0; i < tailPos.size() - 1; i++) {
@@ -117,10 +144,10 @@ void Operate::renderTail(Particle &particle, glm::mat4 modelMat) {
 			glm::mat4 tmp_modelMat = modelMat;
 			glm::vec3 interPos = start + interval * (float)j;
 			tmp_modelMat = glm::translate(tmp_modelMat, interPos);
-			glm::vec3 tailScale = getTailScale(particle.size, m, totalNum);
+			glm::vec3 tailScale = getTailScale(particle.size, m, totalTailNum);
 			tmp_modelMat = glm::scale(tmp_modelMat, tailScale);
 			//获取尾部的透明度
-			float tailTransparent = getTailTransparent(particle.transparent, m, totalNum);
+			float tailTransparent = getTailTransparent(particle.transparent, m, totalTailNum);
 			//将生成的model矩阵传递到shader
 			stringstream ss;
 			string index;
@@ -135,6 +162,7 @@ void Operate::renderTail(Particle &particle, glm::mat4 modelMat) {
 
 //生成均匀分布的方向
 vector<glm::vec3> Operate::genAverDir(int number) {
+	srand(time(NULL));
 	vector<glm::vec3> dirs;
 	//球面坐标系
 	float thetaInterval = PI / number;
@@ -144,6 +172,9 @@ vector<glm::vec3> Operate::genAverDir(int number) {
 		float fiInterval = 2 * PI / m;
 		for (int j = 0; j < m; j++) {
 			float fi = j * fiInterval;
+			//对theta和fi加入小随机扰动
+			theta += theta * parameter.dirBlur * getUnitRand();
+			fi += fi * parameter.dirBlur * getUnitRand();
 			//生成随机方向
 			glm::vec3 dir = glm::vec3(sin(theta)*sin(fi), cos(theta), sin(theta)*cos(fi));
 			dirs.push_back(dir);
@@ -159,7 +190,7 @@ vector<glm::vec3> Operate::genRandDir(int number) {
 	float thetaInterval = PI / number;
 	float fiInterval = 2 * PI / number;
 	//生成伪随机数的种子
-	srand(time(0));
+	srand(time(NULL));
 	//生成不重复的随机数对
 	set<vector<int>> s;
 	pair<set<vector<int>>::iterator, bool> p;
@@ -200,3 +231,9 @@ float Operate::getTailTransparent(float transparent, int k, int total) {
 	float curTransparent = (float)(total - k) * interTransparent;
 	return curTransparent;
 }
+
+//获取[-1, 1]之间的随机数
+float Operate::getUnitRand() {
+	return rand() % 10000 / 10000.0 * 2.0 - 1;
+}
+

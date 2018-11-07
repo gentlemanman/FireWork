@@ -10,8 +10,8 @@ out float curAlpha;
 uniform mat4 view;
 uniform mat4 projection;
 
-uniform mat4 modelMat[100];
-uniform float alpha[100];
+uniform mat4 modelMat[70];
+uniform float alpha[70];
 
 void main()
 {

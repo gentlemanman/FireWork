@@ -80,7 +80,7 @@ public:
 		glBindVertexArray(VAO);
 		//glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 		// 实例化绘制，NUMBERTAIL在shader中需要绘制的个数
-		glDrawElementsInstanced(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0, 100);
+		glDrawElementsInstanced(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0, 70);
 		glBindVertexArray(0);
 
 		// always good practice to set everything back to defaults once configured.

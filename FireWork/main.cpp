@@ -14,6 +14,7 @@
 #include "camera.h"
 #include "Particle.h"
 #include "Operate.h"
+#include "Utils.h"
 
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -25,7 +26,7 @@ void processInput(GLFWwindow *window);
 const unsigned int SCR_WIDTH = 900;
 const unsigned int SCR_HEIGHT = 720;
 //初始化相机
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+Camera camera(glm::vec3(0.0f, 0.0f, 10.0f));
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
@@ -34,6 +35,8 @@ float deltaTime = 0.0f;
 float lastTime = 0.0f;
 // 对帧计数
 int countFrame = 0;
+// 暂停
+bool isStop = false;
 
 int main()
 {
@@ -73,7 +76,7 @@ int main()
 	Model ourModel("dataset/ball/3.obj");
 	Operate operate;
 	vector<Particle> particles;
-	operate.setParameter();//设置烟花粒子的系统参数
+	//operate.setParameter();//开始使用默认的参数
 	operate.initParticles(particles, ourModel, ourShader);//初始化粒子
 	// render loop
 	while (!glfwWindowShouldClose(window))
@@ -85,32 +88,46 @@ int main()
 		// input
 		processInput(window);
 		// rendering
-		glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		// enable shader
 		ourShader.use();
 		// view/projection transformations
-		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 50.0f);
 		glm::mat4 view = camera.GetViewMatrix();
 		ourShader.setMat4("projection", projection);
 		ourShader.setMat4("view", view);
-
 		//绘制烟花的粒子
+		//写入粒子的颜色
+		ourShader.setVec3("mColor", operate.parameter.color);
 		for (int i = 0; i < particles.size(); i++) {
 			glm::mat4 model;
-			model = glm::translate(model, glm::vec3(0.0f, 0.0f, -4.0f));
+			//model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
 			model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
 			glm::mat4 modelMat = model;
 			// 如果粒子还没有消亡，才绘制
-			if (operate.isDie(particles[i])) {
-				operate.motion(particles[i]);//粒子运动
-				operate.getTailPosition(particles[i]);//保存粒子位置（包括尾部的位置）
+			if (operate.isDie(particles[i], isStop)) {
+				if (!isStop) operate.motion(particles[i]);//粒子运动	
 				operate.renderTail(particles[i], modelMat);//为了绘制粒子而传递一些数据
 				particles[i].particleModel.Draw(ourShader);//绘制
 				//model = glm::translate(model, particles[i].position);//设置model矩阵,根据position
 				//ourShader.setMat4("model", model);
 				//ourModel.Draw(ourShader);
 			}
+		}
+		cout << "帧率：" << 1 / deltaTime << endl;
+		// 所有生命都消失时，重置参数
+		if (countFrame > operate.maxLife) {
+			countFrame = 0;
+			float range = 0;
+			for (int i = 0; i < particles.size(); i++) {
+				if (getDistance(particles[i].position) > range) {
+					range = getDistance(particles[i].position);
+				}
+			}
+			cout << "爆炸的范围:" << range << endl;//输出到爆炸中心的范围	
+			operate.setParameter();//设置烟花粒子的系统参数
+			operate.initParticles(particles, ourModel, ourShader);//初始化粒子
 		}
 		//glfw: swap and poll
 		glfwSwapBuffers(window);
@@ -133,6 +150,9 @@ void processInput(GLFWwindow *window)
 		camera.ProcessKeyboard(LEFT, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		camera.ProcessKeyboard(RIGHT, deltaTime);
+	// 空格暂停
+	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+		isStop = !isStop;
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
