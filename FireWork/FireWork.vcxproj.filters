@@ -57,5 +57,11 @@
     <None Include="shader\particle.vs">
       <Filter>shader</Filter>
     </None>
+    <None Include="shader\particle_optimization.fs">
+      <Filter>shader</Filter>
+    </None>
+    <None Include="shader\particle_optimization.vs">
+      <Filter>shader</Filter>
+    </None>
   </ItemGroup>
 </Project>

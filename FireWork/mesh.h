@@ -48,7 +48,7 @@ public:
 	}
 
 	// render the mesh
-	void Draw(Shader shader)
+	void Draw(Shader shader, int amount = 1)
 	{
 		// bind appropriate textures
 		unsigned int diffuseNr = 1;
@@ -70,7 +70,7 @@ public:
 			else if (name == "texture_height")
 				number = std::to_string(heightNr++); // transfer unsigned int to stream
 
-													 // now set the sampler to the correct texture unit
+			// now set the sampler to the correct texture unit
 			glUniform1i(glGetUniformLocation(shader.ID, (name + number).c_str()), i);
 			// and finally bind the texture
 			glBindTexture(GL_TEXTURE_2D, textures[i].id);
@@ -80,7 +80,7 @@ public:
 		glBindVertexArray(VAO);
 		//glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 		// 实例化绘制，NUMBERTAIL在shader中需要绘制的个数
-		glDrawElementsInstanced(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0, 70);
+		glDrawElementsInstanced(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0, amount);
 		glBindVertexArray(0);
 
 		// always good practice to set everything back to defaults once configured.

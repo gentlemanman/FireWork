@@ -8,7 +8,8 @@ class Operate {
 public:
 	int particleNumber = 100;//总粒子数
 	int totalTailNum;//计算尾部总的粒子数;
-	int maxLife = 0;
+	int maxLife = 0;//获取最大生命
+	int countFrame = 0;//记录帧数
 	Parameter parameter;
 
 	//设置烟花系统参数
@@ -23,6 +24,8 @@ public:
 	void getTailPosition(Particle &particle);
 	//绘制尾部（头部也一块绘制）
 	void renderTail(Particle &particle, glm::mat4 modelMat);
+	//render 优化
+	void renderOptimization(Particle &particle, glm::mat4 modelMat);
 
 private:
 	//生成均匀分布的方向,最后生成的粒子数量与particleNumber并不相同
@@ -57,7 +60,9 @@ void  Operate::setParameter() {
 //初始化所有粒子
 void Operate::initParticles(vector<Particle>& particles, Model& ourModel, Shader& ourShader) {
 	particles.clear();
+	srand(time(NULL));
 	vector<glm::vec3> dirs = genAverDir(parameter.number);
+	//vector<glm::vec3> dirs = genRandDir(particleNumber);
 	particleNumber = dirs.size();//保存总共的粒子数
 	maxLife = parameter.initialLife + parameter.lifeBlur * parameter.initialLife;//获取粒子生命的最大值
 	totalTailNum = (parameter.saveTailNum - 1) * (parameter.interTailNum + 1);//计算总尾部粒子数
@@ -66,8 +71,6 @@ void Operate::initParticles(vector<Particle>& particles, Model& ourModel, Shader
 	int m_life = parameter.initialLife;
 	float m_size = parameter.size;
 	float m_transparent = parameter.transparent;
-	srand(time(NULL));
-	//vector<glm::vec3> dirs = genRandDir(particleNumber);
 	for (int i = 0; i < dirs.size(); i++) {
 		//生成一个粒子
 		Particle particle(i); //ID
@@ -88,7 +91,7 @@ void Operate::initParticles(vector<Particle>& particles, Model& ourModel, Shader
 void Operate::motion(Particle &particle) {
 	float t = parameter.delta_T;
 	//更新x方向的加速度、速度、位置
-	//TODO：加速度还没更新，可以与速度的平方成反比
+	//TODO：加速度还没更新，可以与速度的平方成正比
 	particle.speed -= particle.accelerate * t;
 	particle.position += particle.speed * t;
 	//运动之后需要更新保存的尾部粒子位置
@@ -122,9 +125,11 @@ bool Operate::isDie(Particle &particle, bool isStop) {
 
 //获取粒子的尾部位置
 void Operate::getTailPosition(Particle &particle) {
-	glm::vec3 pos = particle.position;
-	particle.tailPosition.pop_back();
-	particle.tailPosition.push_front(pos);
+	if (countFrame % parameter.intervalFrame == 0) {
+		glm::vec3 pos = particle.position;
+		particle.tailPosition.pop_back();
+		particle.tailPosition.push_front(pos);
+	}
 }
 
 //绘制尾部（头部也一块绘制）
@@ -160,9 +165,30 @@ void Operate::renderTail(Particle &particle, glm::mat4 modelMat) {
 	}
 }
 
+//render 优化：此处只传入预插值的位置，插值的计算操作在shader中执行将大幅提高帧率
+void Operate::renderOptimization(Particle &particle, glm::mat4 modelMat) {
+	//传入当的model矩阵
+	particle.particleShader.setMat4("model", modelMat);
+	//传入当前头粒子的size
+	particle.particleShader.setFloat("size", particle.size);
+	//传入alpha
+	particle.particleShader.setFloat("alpha", particle.transparent);
+	//传入预插值的位置
+	int m = 0;
+	for (list<glm::vec3>::iterator itPos = particle.tailPosition.begin(); itPos != particle.tailPosition.end(); itPos++) {
+		stringstream ss;
+		string index;
+		ss << m;
+		index = ss.str();
+		particle.particleShader.setVec3(("tailPos[" + index + "]").c_str(), *itPos);
+		m++;
+	}
+
+}
+
 //生成均匀分布的方向
 vector<glm::vec3> Operate::genAverDir(int number) {
-	srand(time(NULL));
+	//srand(time(NULL));
 	vector<glm::vec3> dirs;
 	//球面坐标系
 	float thetaInterval = PI / number;

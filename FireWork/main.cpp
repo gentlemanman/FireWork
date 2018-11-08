@@ -33,8 +33,6 @@ bool firstMouse = true;
 //计时初始化
 float deltaTime = 0.0f;
 float lastTime = 0.0f;
-// 对帧计数
-int countFrame = 0;
 // 暂停
 bool isStop = false;
 
@@ -71,7 +69,8 @@ int main()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	// build and compile shaders
-	Shader ourShader("shader/particle.vs", "shader/particle.fs");
+	//Shader ourShader("shader/particle.vs", "shader/particle.fs");
+	Shader ourShader("shader/particle_optimization.vs", "shader/particle_optimization.fs");
 	// load models
 	Model ourModel("dataset/ball/3.obj");
 	Operate operate;
@@ -98,8 +97,10 @@ int main()
 		ourShader.setMat4("projection", projection);
 		ourShader.setMat4("view", view);
 		//绘制烟花的粒子
-		//写入粒子的颜色
-		ourShader.setVec3("mColor", operate.parameter.color);
+		ourShader.setVec3("mColor", operate.parameter.color);//写入粒子的颜色
+		ourShader.setInt("saveNum", operate.parameter.saveTailNum);//保存粒子的个数
+		ourShader.setInt("interNum", operate.parameter.interTailNum);//中间插值的个数
+		ourShader.setBool("isTailScale", operate.parameter.isTailScale);//尾部粒子是否缩放
 		for (int i = 0; i < particles.size(); i++) {
 			glm::mat4 model;
 			//model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
@@ -108,17 +109,18 @@ int main()
 			// 如果粒子还没有消亡，才绘制
 			if (operate.isDie(particles[i], isStop)) {
 				if (!isStop) operate.motion(particles[i]);//粒子运动	
-				operate.renderTail(particles[i], modelMat);//为了绘制粒子而传递一些数据
-				particles[i].particleModel.Draw(ourShader);//绘制
-				//model = glm::translate(model, particles[i].position);//设置model矩阵,根据position
+				//operate.renderTail(particles[i], modelMat);//为了绘制粒子而传递一些数据
+				operate.renderOptimization(particles[i], modelMat);// 绘制优化
+				particles[i].particleModel.Draw(ourShader, operate.totalTailNum);//绘制
 				//ourShader.setMat4("model", model);
 				//ourModel.Draw(ourShader);
 			}
 		}
+		cout << "粒子总数:" << operate.particleNumber << endl;
 		cout << "帧率：" << 1 / deltaTime << endl;
 		// 所有生命都消失时，重置参数
-		if (countFrame > operate.maxLife) {
-			countFrame = 0;
+		if (operate.countFrame > operate.maxLife) {
+			operate.countFrame = 0;
 			float range = 0;
 			for (int i = 0; i < particles.size(); i++) {
 				if (getDistance(particles[i].position) > range) {
@@ -132,7 +134,7 @@ int main()
 		//glfw: swap and poll
 		glfwSwapBuffers(window);
 		glfwPollEvents();
-		countFrame++;
+		if(!isStop) operate.countFrame++;
 	}
 	glfwTerminate();
 	return 0;

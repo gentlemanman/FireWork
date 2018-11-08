@@ -135,6 +135,8 @@
   <ItemGroup>
     <None Include="shader\particle.fs" />
     <None Include="shader\particle.vs" />
+    <None Include="shader\particle_optimization.fs" />
+    <None Include="shader\particle_optimization.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
