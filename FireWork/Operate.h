@@ -9,7 +9,10 @@ public:
 	int particleNumber = 100;//总粒子数
 	int totalTailNum;//计算尾部总的粒子数;
 	int maxLife = 0;//获取最大生命
-	int countFrame = 0;//记录帧数
+	int countFrame = 0;//记录当前烟花帧数
+	int example = 0;//记录是第几个烟花
+	bool isRGB = true;//当前的记录是RGB还是深度图
+	vector<Particle> bu_particles;//备份上一次生成的所有粒子供生成深度图使用
 	Parameter parameter;
 
 	//设置烟花系统参数
@@ -26,6 +29,8 @@ public:
 	void renderTail(Particle &particle, glm::mat4 modelMat);
 	//render 优化
 	void renderOptimization(Particle &particle, glm::mat4 modelMat);
+	// 有关重置烟花粒子
+	void resetParticle(vector<Particle>& particles, Model& ourModel, Shader& ourShader);
 
 private:
 	//生成均匀分布的方向,最后生成的粒子数量与particleNumber并不相同
@@ -38,6 +43,8 @@ private:
 	float getTailTransparent(float transparent, int k, int total);
 	//获取[-1, 1]之间的随机数
 	float getUnitRand();
+	//获取所有粒子的最大生命值
+	int getMaxLife(vector<Particle>& particles);
 }; 
 
 ///函数的实现
@@ -64,7 +71,6 @@ void Operate::initParticles(vector<Particle>& particles, Model& ourModel, Shader
 	vector<glm::vec3> dirs = genAverDir(parameter.number);
 	//vector<glm::vec3> dirs = genRandDir(particleNumber);
 	particleNumber = dirs.size();//保存总共的粒子数
-	maxLife = parameter.initialLife + parameter.lifeBlur * parameter.initialLife;//获取粒子生命的最大值
 	totalTailNum = (parameter.saveTailNum - 1) * (parameter.interTailNum + 1);//计算总尾部粒子数
 	float m_speed = parameter.initialSpeed;
 	glm::vec3 m_accelerate = parameter.accelerate;
@@ -85,6 +91,7 @@ void Operate::initParticles(vector<Particle>& particles, Model& ourModel, Shader
 		particle.transparent = m_transparent + m_transparent * parameter.transparentBlur * getUnitRand();//粒子的初始透明度
 		particles.push_back(particle);//保存生成的粒子
 	}
+	maxLife = getMaxLife(particles);//获取粒子生命的最大值
 }
 
 //粒子的运动模型
@@ -183,15 +190,33 @@ void Operate::renderOptimization(Particle &particle, glm::mat4 modelMat) {
 		particle.particleShader.setVec3(("tailPos[" + index + "]").c_str(), *itPos);
 		m++;
 	}
+	//绘制
+	particle.particleModel.Draw(particle.particleShader, totalTailNum);
 
+}
+
+void Operate::resetParticle(vector<Particle>& particles, Model& ourModel, Shader& ourShader) {
+	countFrame = 0;
+	if (!isRGB) {
+		setParameter();//设置烟花粒子系统的参数
+		initParticles(particles, ourModel, ourShader);//初始化粒子
+		bu_particles = particles;//备份粒子
+		isRGB = !isRGB;
+		example++;//进行下一个实例
+	}
+	else {
+		particles = bu_particles;
+		isRGB = !isRGB;
+	}
 }
 
 //生成均匀分布的方向
 vector<glm::vec3> Operate::genAverDir(int number) {
 	//srand(time(NULL));
+	float rangeTheta = PI;
 	vector<glm::vec3> dirs;
 	//球面坐标系
-	float thetaInterval = PI / number;
+	float thetaInterval = rangeTheta / number;
 	for (int i = 0; i <= number; i++) {
 		float theta = i * thetaInterval;
 		int m = std::max(floor(number * sin(theta)), 1.0f);
@@ -263,3 +288,13 @@ float Operate::getUnitRand() {
 	return rand() % 10000 / 10000.0 * 2.0 - 1;
 }
 
+//获取所有粒子的最大生命值
+int Operate::getMaxLife(vector<Particle>& particles) {
+	int ans = 0;
+	for (Particle particle : particles) {
+		if (particle.life > ans) {
+			ans = particle.life;
+		}
+	}
+	return ans;
+}

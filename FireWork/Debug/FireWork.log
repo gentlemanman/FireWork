@@ -6,26 +6,28 @@ c:\users\administrator\desktop\firework\firework\particle.h(18): warning C4005: 
 c:\users\administrator\desktop\firework\firework\particle.h(44): warning C4305: “初始化”: 从“double”到“float”截断
 c:\users\administrator\desktop\firework\firework\particle.h(45): warning C4305: “初始化”: 从“double”到“float”截断
 c:\users\administrator\desktop\firework\firework\particle.h(46): warning C4305: “初始化”: 从“double”到“float”截断
-c:\users\administrator\desktop\firework\firework\operate.h(49): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
-c:\users\administrator\desktop\firework\firework\operate.h(50): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
-c:\users\administrator\desktop\firework\firework\operate.h(51): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
-c:\users\administrator\desktop\firework\firework\operate.h(52): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
-c:\users\administrator\desktop\firework\firework\operate.h(63): warning C4244: “参数”: 从“time_t”转换到“unsigned int”，可能丢失数据
-c:\users\administrator\desktop\firework\firework\operate.h(67): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
-c:\users\administrator\desktop\firework\firework\operate.h(74): warning C4018: “<”: 有符号/无符号不匹配
-c:\users\administrator\desktop\firework\firework\operate.h(82): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
-c:\users\administrator\desktop\firework\firework\operate.h(143): warning C4018: “<”: 有符号/无符号不匹配
-c:\users\administrator\desktop\firework\firework\operate.h(197): warning C4244: “初始化”: 从“const float”转换到“int”，可能丢失数据
-c:\users\administrator\desktop\firework\firework\operate.h(219): warning C4244: “参数”: 从“time_t”转换到“unsigned int”，可能丢失数据
-c:\users\administrator\desktop\firework\firework\operate.h(263): warning C4244: “return”: 从“double”转换到“float”，可能丢失数据
-c:\users\administrator\desktop\firework\firework\main.cpp(84): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
-c:\users\administrator\desktop\firework\firework\main.cpp(104): warning C4018: “<”: 有符号/无符号不匹配
-c:\users\administrator\desktop\firework\firework\main.cpp(125): warning C4018: “<”: 有符号/无符号不匹配
-c:\users\administrator\desktop\firework\firework\main.cpp(168): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
-c:\users\administrator\desktop\firework\firework\main.cpp(169): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
-c:\users\administrator\desktop\firework\firework\main.cpp(172): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
-c:\users\administrator\desktop\firework\firework\main.cpp(173): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
-c:\users\administrator\desktop\firework\firework\main.cpp(174): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
-c:\users\administrator\desktop\firework\firework\main.cpp(175): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
-c:\users\administrator\desktop\firework\firework\main.cpp(181): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据
+c:\users\administrator\desktop\firework\firework\operate.h(56): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+c:\users\administrator\desktop\firework\firework\operate.h(57): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+c:\users\administrator\desktop\firework\firework\operate.h(58): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+c:\users\administrator\desktop\firework\firework\operate.h(59): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+c:\users\administrator\desktop\firework\firework\operate.h(70): warning C4244: “参数”: 从“time_t”转换到“unsigned int”，可能丢失数据
+c:\users\administrator\desktop\firework\firework\operate.h(80): warning C4018: “<”: 有符号/无符号不匹配
+c:\users\administrator\desktop\firework\firework\operate.h(88): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
+c:\users\administrator\desktop\firework\firework\operate.h(150): warning C4018: “<”: 有符号/无符号不匹配
+c:\users\administrator\desktop\firework\firework\operate.h(222): warning C4244: “初始化”: 从“const float”转换到“int”，可能丢失数据
+c:\users\administrator\desktop\firework\firework\operate.h(244): warning C4244: “参数”: 从“time_t”转换到“unsigned int”，可能丢失数据
+c:\users\administrator\desktop\firework\firework\operate.h(288): warning C4244: “return”: 从“double”转换到“float”，可能丢失数据
+c:\users\administrator\desktop\firework\firework\includeandlib\include\freeimage\freeimage.h : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+c:\users\administrator\desktop\firework\firework\utils.h(42): warning C4018: “<”: 有符号/无符号不匹配
+c:\users\administrator\desktop\firework\firework\utils.h(45): warning C4018: “<”: 有符号/无符号不匹配
+c:\users\administrator\desktop\firework\firework\utils.h(64): warning C4018: “<”: 有符号/无符号不匹配
+c:\users\administrator\desktop\firework\firework\main.cpp(88): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+c:\users\administrator\desktop\firework\firework\main.cpp(113): warning C4018: “<”: 有符号/无符号不匹配
+c:\users\administrator\desktop\firework\firework\main.cpp(172): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+c:\users\administrator\desktop\firework\firework\main.cpp(173): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+c:\users\administrator\desktop\firework\firework\main.cpp(176): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+c:\users\administrator\desktop\firework\firework\main.cpp(177): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+c:\users\administrator\desktop\firework\firework\main.cpp(178): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+c:\users\administrator\desktop\firework\firework\main.cpp(179): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+c:\users\administrator\desktop\firework\firework\main.cpp(185): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据
   FireWork.vcxproj -> C:\Users\Administrator\Desktop\FireWork\Debug\FireWork.exe

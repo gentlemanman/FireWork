@@ -1,5 +1,7 @@
 #pragma once
 #define PI 3.1415927f
+//是否截图
+#define isScreenshot 1
 
 //粒子系统的初始属性
 #define NUMBER 10//粒子的数量
@@ -10,14 +12,14 @@
 #define AY 0.0f //y的加速度（重力与阻力的合力）
 #define AZ 0.0f //z的加速度（阻力）
 #define INITIALLIFE 100 //生命周期
-#define SAVETAILNUM 20 // 保存尾部粒子的个数
+#define SAVETAILNUM 10 // 保存尾部粒子的个数
 #define INTERTAILNUM 10 //在两个粒子之间插值的数量
 #define SIZE 1.0f //粒子的初始Scale
-#define SIZEATTEN 0.005f //粒子size衰减的速率(scale)
+#define SIZEATTEN 0.001f //粒子size衰减的速率(scale)
 #define ISTAILSCALE 1 //尾部尺寸是否衰减
 #define TRANSPARENT 1.0f //粒子的初始透明度
 #define TRANSPARENTATTEN 0.001f //粒子透明度的衰减
-#define INTERVALFRAME 1 //保存之前尾部位置的间隔帧数
+#define INTERVALFRAME 2 //保存之前尾部位置的间隔帧数
 #define SPEEDBLUR 0.02f //速度的扰动
 #define DIRBLUR 0.02f //方向的扰动
 #define LIFEBLUR 0.2 //生命的扰动

@@ -16,12 +16,14 @@
 #include "Operate.h"
 #include "Utils.h"
 
-
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+void processInput(GLFWwindow *window);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
-void processInput(GLFWwindow *window);
 
+//远近裁剪面
+const float CAM_NEAR = 1.0f;
+const float CAM_FAR = 50.0f;
 // 窗口大小设置
 const unsigned int SCR_WIDTH = 900;
 const unsigned int SCR_HEIGHT = 720;
@@ -69,14 +71,14 @@ int main()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	// build and compile shaders
-	//Shader ourShader("shader/particle.vs", "shader/particle.fs");
 	Shader ourShader("shader/particle_optimization.vs", "shader/particle_optimization.fs");
 	// load models
-	Model ourModel("dataset/ball/3.obj");
+	Model ourModel("obj/ball/3.obj");
 	Operate operate;
 	vector<Particle> particles;
 	//operate.setParameter();//开始使用默认的参数
 	operate.initParticles(particles, ourModel, ourShader);//初始化粒子
+	operate.bu_particles = particles;//备份烟花粒子
 	// render loop
 	while (!glfwWindowShouldClose(window))
 	{
@@ -92,15 +94,20 @@ int main()
 		// enable shader
 		ourShader.use();
 		// view/projection transformations
-		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 50.0f);
+		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, CAM_NEAR, CAM_FAR);
 		glm::mat4 view = camera.GetViewMatrix();
 		ourShader.setMat4("projection", projection);
 		ourShader.setMat4("view", view);
+		//向shader中传进远近裁剪面
+		ourShader.setFloat("near", CAM_NEAR);
+		ourShader.setFloat("far", CAM_FAR);
 		//绘制烟花的粒子
 		ourShader.setVec3("mColor", operate.parameter.color);//写入粒子的颜色
 		ourShader.setInt("saveNum", operate.parameter.saveTailNum);//保存粒子的个数
 		ourShader.setInt("interNum", operate.parameter.interTailNum);//中间插值的个数
 		ourShader.setBool("isTailScale", operate.parameter.isTailScale);//尾部粒子是否缩放
+		//当前渲染的是否为RGB图像
+		ourShader.setBool("isRGB", operate.isRGB);
 		for (int i = 0; i < particles.size(); i++) {
 			glm::mat4 model;
 			//model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
@@ -109,35 +116,35 @@ int main()
 			// 如果粒子还没有消亡，才绘制
 			if (operate.isDie(particles[i], isStop)) {
 				if (!isStop) operate.motion(particles[i]);//粒子运动	
-				//operate.renderTail(particles[i], modelMat);//为了绘制粒子而传递一些数据
 				operate.renderOptimization(particles[i], modelMat);// 绘制优化
-				particles[i].particleModel.Draw(ourShader, operate.totalTailNum);//绘制
-				//ourShader.setMat4("model", model);
-				//ourModel.Draw(ourShader);
 			}
 		}
-		cout << "粒子总数:" << operate.particleNumber << endl;
-		cout << "帧率：" << 1 / deltaTime << endl;
+		// 渲染出当前帧
+		glfwSwapBuffers(window);
+		// 保存当前帧
+		if (isScreenshot) {
+			saveImage(operate.isRGB, operate.example, operate.countFrame, SCR_WIDTH, SCR_HEIGHT);
+		} 
+		// 暂停
+		if (!isStop) {
+			operate.countFrame++;
+		}
 		// 所有生命都消失时，重置参数
 		if (operate.countFrame > operate.maxLife) {
-			operate.countFrame = 0;
-			float range = 0;
-			for (int i = 0; i < particles.size(); i++) {
-				if (getDistance(particles[i].position) > range) {
-					range = getDistance(particles[i].position);
-				}
-			}
-			cout << "爆炸的范围:" << range << endl;//输出到爆炸中心的范围	
-			operate.setParameter();//设置烟花粒子的系统参数
-			operate.initParticles(particles, ourModel, ourShader);//初始化粒子
+			//cout << "爆炸的范围:" << getExplosionRangle(particles) << endl; //输出到爆炸中心的范围	
+			operate.resetParticle(particles, ourModel, ourShader);
 		}
 		//glfw: swap and poll
-		glfwSwapBuffers(window);
 		glfwPollEvents();
-		if(!isStop) operate.countFrame++;
+		
 	}
 	glfwTerminate();
 	return 0;
+}
+
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+	glViewport(0, 0, width, height);
 }
 
 void processInput(GLFWwindow *window)
@@ -155,11 +162,6 @@ void processInput(GLFWwindow *window)
 	// 空格暂停
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
 		isStop = !isStop;
-}
-
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
-	glViewport(0, 0, width, height);
 }
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
@@ -180,3 +182,7 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
 	camera.ProcessMouseScroll(yoffset);
 }
+
+
+
+
