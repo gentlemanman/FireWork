@@ -1,7 +1,7 @@
 #pragma once
 #define PI 3.1415927f
 //是否截图
-#define isScreenshot 1
+#define isScreenshot 0
 
 //粒子系统的初始属性
 #define NUMBER 10//粒子的数量

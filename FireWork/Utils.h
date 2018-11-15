@@ -3,12 +3,30 @@
 //新建文件夹
 #include <direct.h>
 #include <io.h>
-// 获取两点之间的距离
-float getDistance(glm::vec3 p1, glm::vec3 p2 = glm::vec3(0.0f)) {
-	float x = p1.x - p2.x;
-	float y = p1.y - p2.y;
-	float z = p1.z - p2.z;
-	return sqrt(x*x + y*y + z*z);
+
+class cRandom {
+public:
+	cRandom(int x, double y) :seed(x), random(y) {};
+	cRandom() :seed(0), random(0) {};
+	int seed;
+	double random;
+};
+
+cRandom my_random(int z) {
+	const int m = pow(2, 31) - 1;
+	const int a = 16807;
+	const int q = 127773;
+	const int r = 2836;
+	int temp = a * (z % q) - r * (z / q);
+	if (temp < 0) {
+		temp = temp + m;
+	}
+	z = temp;
+	double t = z * 1.0 / m;
+	cRandom cr;
+	cr.random = t;
+	cr.seed = z;
+	return cr;
 }
 
 //保存当前窗口帧
@@ -58,6 +76,64 @@ void saveImage(bool isRGB, int example, int num, int width, int height) {
 	delete[] mpixels;
 }
 
+//获取[-1, 1]之间的随机数
+float getUnitRand() {
+	return rand() % 10000 / 10000.0 * 2.0 - 1;
+}
+
+//获取一个随机的颜色
+glm::vec3 getRandColor() {
+	glm::vec3 color;
+	// 获取亮度较大的颜色组合
+	while (true) {
+		float R = getUnitRand() / 2.0 + 0.5;
+		float G = getUnitRand() / 2.0 + 0.5;
+		float B = getUnitRand() / 2.0 + 0.5;
+		float Y = 0.299*R + 0.587*G + 0.114*B;//计算亮度
+		if (Y >= 0.5) {
+			color = glm::vec3(R, G, B);
+			break;//亮度满足条件结束
+		}
+	}
+	return color;
+}
+
+//获取球面的上位置
+vector<glm::vec3> getSpherePoint(int num) {
+	vector<glm::vec3> ans;
+	srand(time(0));
+	int z1 = rand();
+	srand(z1);
+	int z2 = rand();
+	cRandom sita(z1, 0.0);
+	cRandom pesi(z2, 0.0);
+	for (int i = 0; i < num; ++i) {
+		sita = my_random(pesi.seed);
+		pesi = my_random(sita.seed);
+		double u = 2 * sita.random - 1.0;
+		double v = 2 * pesi.random - 1.0;
+		double r2 = pow(u, 2) + pow(v, 2);
+		if (r2 < 1) {
+			double x = 2 * u * sqrt(1 - r2);
+			double y = 2 * v * sqrt(1 - r2);
+			double z = 1 - 2 * r2;
+			ans.push_back(glm::vec3(x, y, z));
+		}
+		else {
+			i--;
+		}
+	}
+	return ans;
+}
+
+// 获取两点之间的距离
+float getDistance(glm::vec3 p1, glm::vec3 p2 = glm::vec3(0.0f)) {
+	float x = p1.x - p2.x;
+	float y = p1.y - p2.y;
+	float z = p1.z - p2.z;
+	return sqrt(x*x + y*y + z*z);
+}
+
 //获取爆炸范围
 float getExplosionRangle(vector<Particle> particles) {
 	float range = 0;
@@ -68,4 +144,6 @@ float getExplosionRangle(vector<Particle> particles) {
 	}
 	return range;
 }
+
+
 

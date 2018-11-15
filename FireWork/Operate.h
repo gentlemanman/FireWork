@@ -2,10 +2,13 @@
 #include <ctime>
 #include <cmath>
 #include <set>
+#include "camera.h"
 #include "Particle.h"
+#include "Utils.h"
 
 class Operate {
 public:
+
 	int particleNumber = 100;//总粒子数
 	int totalTailNum;//计算尾部总的粒子数;
 	int maxLife = 0;//获取最大生命
@@ -31,7 +34,8 @@ public:
 	void renderOptimization(Particle &particle, glm::mat4 modelMat);
 	// 有关重置烟花粒子
 	void resetParticle(vector<Particle>& particles, Model& ourModel, Shader& ourShader);
-
+	// 重置相机
+	void resetCamera(Camera& camera);
 private:
 	//生成均匀分布的方向,最后生成的粒子数量与particleNumber并不相同
 	vector<glm::vec3> genAverDir(int number);
@@ -41,8 +45,6 @@ private:
 	glm::vec3 getTailScale(float size, int k, int total);
 	//根据当前头粒子的transparent、总共尾部粒子数获取第k个粒子的transparent
 	float getTailTransparent(float transparent, int k, int total);
-	//获取[-1, 1]之间的随机数
-	float getUnitRand();
 	//获取所有粒子的最大生命值
 	int getMaxLife(vector<Particle>& particles);
 }; 
@@ -51,25 +53,16 @@ private:
 //设置烟花系统参数
 void  Operate::setParameter() {
 	// 重置系统参数后，可进行一些修改
-	// 获取亮度较大的颜色组合
-	while (true) {
-		float R = getUnitRand() / 2.0 + 0.5;
-		float G = getUnitRand() / 2.0 + 0.5;
-		float B = getUnitRand() / 2.0 + 0.5;
-		float Y = 0.299*R + 0.587*G + 0.114*B;//计算亮度
-		if (Y >= 0.5) {
-			parameter.color = glm::vec3(R, G, B);
-			break;//亮度满足条件结束
-		}
-	}
+	parameter.color = getRandColor();//获取较亮的颜色
 }
 
 //初始化所有粒子
 void Operate::initParticles(vector<Particle>& particles, Model& ourModel, Shader& ourShader) {
 	particles.clear();
 	srand(time(NULL));
-	vector<glm::vec3> dirs = genAverDir(parameter.number);
-	//vector<glm::vec3> dirs = genRandDir(particleNumber);
+	//vector<glm::vec3> dirs = genAverDir(parameter.number);
+	vector<glm::vec3> dirs = getSpherePoint(100);
+	//vector<glm::vec3> dirs = genRandDir(100);
 	particleNumber = dirs.size();//保存总共的粒子数
 	totalTailNum = (parameter.saveTailNum - 1) * (parameter.interTailNum + 1);//计算总尾部粒子数
 	float m_speed = parameter.initialSpeed;
@@ -201,12 +194,20 @@ void Operate::resetParticle(vector<Particle>& particles, Model& ourModel, Shader
 		setParameter();//设置烟花粒子系统的参数
 		initParticles(particles, ourModel, ourShader);//初始化粒子
 		bu_particles = particles;//备份粒子
-		isRGB = !isRGB;
 		example++;//进行下一个实例
 	}
 	else {
 		particles = bu_particles;
-		isRGB = !isRGB;
+	}
+}
+
+void Operate::resetCamera(Camera& camera) {
+	// 当前不是RGB帧时，下一example是RGB，需要更新相机的位置
+	if (!isRGB) {
+		camera.Position = getSpherePoint(1)[0] * 10.0f;
+		camera.Front = glm::normalize(glm::vec3(0.0f, 0.0f, 0.0f) - camera.Position);
+		camera.Right = glm::normalize(glm::cross(camera.Front, camera.WorldUp));
+		camera.Up = glm::normalize(glm::cross(camera.Right, camera.Front));
 	}
 }
 
@@ -281,11 +282,6 @@ float Operate::getTailTransparent(float transparent, int k, int total) {
 	float interTransparent = transparent / (float)total;
 	float curTransparent = (float)(total - k) * interTransparent;
 	return curTransparent;
-}
-
-//获取[-1, 1]之间的随机数
-float Operate::getUnitRand() {
-	return rand() % 10000 / 10000.0 * 2.0 - 1;
 }
 
 //获取所有粒子的最大生命值

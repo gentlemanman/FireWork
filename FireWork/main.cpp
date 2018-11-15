@@ -132,11 +132,12 @@ int main()
 		// 所有生命都消失时，重置参数
 		if (operate.countFrame > operate.maxLife) {
 			//cout << "爆炸的范围:" << getExplosionRangle(particles) << endl; //输出到爆炸中心的范围	
+			//operate.resetCamera(camera);
 			operate.resetParticle(particles, ourModel, ourShader);
+			operate.isRGB = !operate.isRGB;
 		}
 		//glfw: swap and poll
 		glfwPollEvents();
-		
 	}
 	glfwTerminate();
 	return 0;
