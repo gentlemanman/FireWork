@@ -15,6 +15,7 @@ public:
 	int countFrame = 0;//记录当前烟花帧数
 	int example = 0;//记录是第几个烟花
 	bool isRGB = true;//当前的记录是RGB还是深度图
+	int m_saveTailNum;// 记录一下保存尾部的粒子个数
 	vector<Particle> bu_particles;//备份上一次生成的所有粒子供生成深度图使用
 	Parameter parameter;
 
@@ -60,10 +61,13 @@ void  Operate::setParameter() {
 void Operate::initParticles(vector<Particle>& particles, Model& ourModel, Shader& ourShader) {
 	particles.clear();
 	srand(time(NULL));
-	//vector<glm::vec3> dirs = genAverDir(parameter.number);
-	vector<glm::vec3> dirs = getSpherePoint(100);
+	parameter.number = NUMBER + NUMBER * NUMBER_BLUR * getUnitRand();//粒子数量的扰动
+	parameter.accelerate.y = AY + AY * RESIST_BLUR * getUnitRand();//重力加速度的扰动
+	vector<glm::vec3> dirs = genAverDir(parameter.number);
+	//vector<glm::vec3> dirs = getSpherePoint(100);
 	//vector<glm::vec3> dirs = genRandDir(100);
 	particleNumber = dirs.size();//保存总共的粒子数
+	m_saveTailNum = parameter.saveTailNum + parameter.saveTailNum * parameter.saveTailNumBlur * getUnitRand();//更新保存尾部粒子的个数
 	totalTailNum = (parameter.saveTailNum - 1) * (parameter.interTailNum + 1);//计算总尾部粒子数
 	float m_speed = parameter.initialSpeed;
 	glm::vec3 m_accelerate = parameter.accelerate;
@@ -204,7 +208,8 @@ void Operate::resetParticle(vector<Particle>& particles, Model& ourModel, Shader
 void Operate::resetCamera(Camera& camera) {
 	// 当前不是RGB帧时，下一example是RGB，需要更新相机的位置
 	if (!isRGB) {
-		camera.Position = getSpherePoint(1)[0] * 10.0f;
+		camera.Position = getCameraRotatePoint(camera.Position);
+		//camera.Position = getSpherePoint(1)[0] * 10.0f;
 		camera.Front = glm::normalize(glm::vec3(0.0f, 0.0f, 0.0f) - camera.Position);
 		camera.Right = glm::normalize(glm::cross(camera.Front, camera.WorldUp));
 		camera.Up = glm::normalize(glm::cross(camera.Right, camera.Front));

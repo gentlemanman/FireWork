@@ -69,7 +69,7 @@ void saveImage(bool isRGB, int example, int num, int width, int height) {
 			bits += 4;
 		}
 	}
-	bool bSuccess = FreeImage_Save(FIF_PNG, bitmap, fileName.c_str(), PNG_Z_NO_COMPRESSION);
+	bool bSuccess = FreeImage_Save(FIF_PNG, bitmap, fileName.c_str(), PNG_Z_DEFAULT_COMPRESSION);
 	if (bSuccess == false)
 		cout << "保存失败" << endl;
 	FreeImage_Unload(bitmap);
@@ -143,6 +143,18 @@ float getExplosionRangle(vector<Particle> particles) {
 		}
 	}
 	return range;
+}
+
+//相机围绕中心的旋转获取新的位置
+glm::vec3 getCameraRotatePoint(glm::vec3 camPos) {
+	float x = camPos.x;
+	float z = camPos.z;
+	// 围绕中心点旋转，仅旋转x、z即可
+	//先获取一个随机的旋转弧度(-pi, pi)
+	float theta = getUnitRand() * PI;
+	float x1 = x * cos(theta) - z * sin(theta);
+	float z1 = x * sin(theta) + z * cos(theta);
+	return glm::vec3(x1, camPos.y, z1);
 }
 
 

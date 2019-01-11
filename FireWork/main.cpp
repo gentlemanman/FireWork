@@ -23,7 +23,7 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
 //远近裁剪面
 const float CAM_NEAR = 1.0f;
-const float CAM_FAR = 50.0f;
+const float CAM_FAR = 20.0f;
 // 窗口大小设置
 const unsigned int SCR_WIDTH = 900;
 const unsigned int SCR_HEIGHT = 720;
@@ -37,6 +37,11 @@ float deltaTime = 0.0f;
 float lastTime = 0.0f;
 // 暂停
 bool isStop = false;
+// 记录截图的总数量
+int max_example = 100;
+int count_rgb = 35846;
+int count_depth =35846;
+
 
 int main()
 {
@@ -54,7 +59,8 @@ int main()
 	}
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-	glfwSetCursorPosCallback(window, mouse_callback);
+	// 鼠标是否可用
+	if (isMouse) glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetScrollCallback(window, scroll_callback);
 	// tell GLFW to capture our mouse
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -103,14 +109,14 @@ int main()
 		ourShader.setFloat("far", CAM_FAR);
 		//绘制烟花的粒子
 		ourShader.setVec3("mColor", operate.parameter.color);//写入粒子的颜色
-		ourShader.setInt("saveNum", operate.parameter.saveTailNum);//保存粒子的个数
+		ourShader.setInt("saveNum", operate.m_saveTailNum);//保存粒子的个数
 		ourShader.setInt("interNum", operate.parameter.interTailNum);//中间插值的个数
 		ourShader.setBool("isTailScale", operate.parameter.isTailScale);//尾部粒子是否缩放
 		//当前渲染的是否为RGB图像
 		ourShader.setBool("isRGB", operate.isRGB);
 		for (int i = 0; i < particles.size(); i++) {
 			glm::mat4 model;
-			//model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+			model = glm::translate(model, glm::vec3(0.0f, 1.8f, 0.0f));
 			model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
 			glm::mat4 modelMat = model;
 			// 如果粒子还没有消亡，才绘制
@@ -122,20 +128,34 @@ int main()
 		// 渲染出当前帧
 		glfwSwapBuffers(window);
 		// 保存当前帧
-		if (isScreenshot) {
-			saveImage(operate.isRGB, operate.example, operate.countFrame, SCR_WIDTH, SCR_HEIGHT);
+		if (isScreenshot && !isStop) {
+			if(operate.isRGB)
+				saveImage(operate.isRGB, operate.example, count_rgb, SCR_WIDTH, SCR_HEIGHT);
+			else
+				saveImage(operate.isRGB, operate.example, count_depth, SCR_WIDTH, SCR_HEIGHT);
 		} 
 		// 暂停
 		if (!isStop) {
 			operate.countFrame++;
+			if(operate.isRGB)
+				count_rgb++;
+			else 
+				count_depth++;
 		}
 		// 所有生命都消失时，重置参数
 		if (operate.countFrame > operate.maxLife) {
+			// 当前是第几个example
+			cout << "example:" << operate.example << endl;
+			if (operate.example == max_example) {
+				isStop = !isStop; // 满足实例个数停止截图
+			} 
 			//cout << "爆炸的范围:" << getExplosionRangle(particles) << endl; //输出到爆炸中心的范围	
-			//operate.resetCamera(camera);
+			operate.resetCamera(camera);
 			operate.resetParticle(particles, ourModel, ourShader);
 			operate.isRGB = !operate.isRGB;
 		}
+		
+		
 		//glfw: swap and poll
 		glfwPollEvents();
 	}
